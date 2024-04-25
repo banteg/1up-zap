@@ -47,8 +47,7 @@ def test_permit_deposit(permit2, yfi, ychad, user, zap, chain, supyfi):
     permit = PermitTransferFrom(
         TokenPermissions(str(yfi), amount), str(zap), nonce, deadline
     )
-    sig = user.sign_message(permit.signable_message)
-    signature = sig.encode_rsv()
+    signature = user.sign_message(permit).encode_rsv()
 
     tx = zap.deposit_permit(amount, nonce, deadline, signature, sender=user)
     # tx.show_trace()
