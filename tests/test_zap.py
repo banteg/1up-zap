@@ -18,17 +18,17 @@ class PermitTransferFrom(EIP712Message):
     deadline: "uint256"
 
 
-def test_zap_no_approve(bunny, yfi, zap):
+def test_zap_no_approve(ychad, zap):
     with ape.reverts("revert: ERC20: transfer amount exceeds allowance"):
-        zap.deposit("1 ether", sender=bunny)
+        zap.deposit("1 ether", sender=ychad)
 
 
-def test_zap_success(bunny, yfi, zap, supyfi):
-    yfi.approve(zap, "1 ether", sender=bunny)
-    tx = zap.deposit("1 ether", sender=bunny)
+def test_zap_success(ychad, yfi, zap, supyfi):
+    yfi.approve(zap, "1 ether", sender=ychad)
+    tx = zap.deposit("1 ether", sender=ychad)
     shares = tx.events[-1]["value"]
-    assert supyfi.Deposit(owner=str(bunny)) in tx.events
-    assert supyfi.balanceOf(bunny) == shares
+    assert supyfi.Deposit(owner=str(ychad)) in tx.events
+    assert supyfi.balanceOf(ychad) == shares
 
 
 def test_permit_domain(permit2, zap, yfi):
@@ -36,10 +36,9 @@ def test_permit_domain(permit2, zap, yfi):
     assert permit2.DOMAIN_SEPARATOR() == permit.signable_message.header
 
 
-def test_permit_deposit(permit2, yfi, bunny, accounts, zap, chain):
-    user = accounts[1]
+def test_permit_deposit(permit2, yfi, ychad, user, zap, chain, supyfi):
     amount = 10**18
-    yfi.transfer(user, amount, sender=bunny)
+    yfi.transfer(user, amount, sender=ychad)
     yfi.approve(permit2, 2**256 - 1, sender=user)
 
     # produce a permit
@@ -52,4 +51,5 @@ def test_permit_deposit(permit2, yfi, bunny, accounts, zap, chain):
     signature = sig.encode_rsv()
 
     tx = zap.deposit_permit(amount, nonce, deadline, signature, sender=user)
-    tx.show_trace()
+    # tx.show_trace()
+    assert supyfi.balanceOf(user) == tx.events[-1]["value"]

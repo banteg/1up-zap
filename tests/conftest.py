@@ -3,8 +3,18 @@ import pytest
 
 
 @pytest.fixture
-def bunny(accounts):
-    return accounts["0x7A1057E6e9093DA9C1D4C1D049609B6889fC4c67"]
+def ychad(accounts):
+    return accounts["0xFEB4acf3df3cDEA7399794D0869ef76A6EfAff52"]
+
+
+@pytest.fixture
+def dev(accounts):
+    return accounts[0]
+
+
+@pytest.fixture
+def user(accounts):
+    return accounts[1]
 
 
 @pytest.fixture
@@ -28,5 +38,5 @@ def permit2():
 
 
 @pytest.fixture
-def zap(project, accounts):
-    return project.UpZap.deploy(sender=accounts[0])
+def zap(project, dev):
+    return project.UpZap.deploy(sender=dev)
