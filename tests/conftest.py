@@ -23,5 +23,10 @@ def supyfi():
 
 
 @pytest.fixture
+def permit2():
+    return Contract("0x000000000022D473030F116dDEE9F6B43aC78BA3")
+
+
+@pytest.fixture
 def zap(project, accounts):
     return project.UpZap.deploy(sender=accounts[0])
